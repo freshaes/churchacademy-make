@@ -606,6 +606,27 @@ Show real examples from Page Documentation
 
 ---
 
+### FLOW_DIAGRAM.md
+**Purpose**: Visual flow diagrams for all user journeys  
+**Location**: `/FLOW_DIAGRAM.md` (root)  
+**Audience**: All roles - developers, designers, product, QA  
+**Length**: ~600 lines
+
+**Content**:
+- Main application flow (all 12 pages)
+- Learning scenario flow (detailed question logic)
+- Onboarding flow (3-step process)
+- Admin panel flow (paths, users, badges)
+- Gamification system flow (lives, hints, points)
+- Navigation flow (sidebar menu)
+- Question type flow (all 6 types)
+- Data flow architecture
+- Color-coded Mermaid diagrams
+
+**Use For**: Understanding navigation, planning features, testing flows
+
+---
+
 ### Configuration Files
 
 **package.json**: All 50+ dependencies with exact versions, scripts  

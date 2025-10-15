@@ -2,6 +2,8 @@
 
 Complete development guidelines for the ChurchAcademy platform - a comprehensive web-based leadership development application designed specifically for churches.
 
+> 📊 **See [FLOW_DIAGRAM.md](/FLOW_DIAGRAM.md)** for visual navigation flows and user journeys
+
 ---
 
 ## Project Overview
@@ -351,6 +353,8 @@ className="active:shadow-none active:translate-y-[2px] transition-all"
 
 ## Routing & Navigation
 
+> 📊 **See [FLOW_DIAGRAM.md](/FLOW_DIAGRAM.md)** for complete visual navigation flows
+
 ### App Structure
 ```tsx
 // App.tsx
@@ -377,6 +381,8 @@ function App() {
 4. **Learning Scenario** → Results Screen → Dashboard
 5. **Admin** (separate flow) → Admin Dashboard → Path Editor / User Manager
 6. **Logout** → Logout Screen → Login (with "Back to Login" button)
+
+For detailed flow diagrams including all question types, admin flows, and gamification logic, see **[FLOW_DIAGRAM.md](/FLOW_DIAGRAM.md)**.
 
 ---
 
