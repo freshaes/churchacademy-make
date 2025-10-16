@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useMemo } from 'react';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Button } from './ui/button';
 import { Badge } from './ui/badge';
@@ -20,7 +20,9 @@ import {
   Church,
   Globe,
   Users as UsersIcon,
-  Camera
+  Camera,
+  Lock,
+  Check
 } from 'lucide-react';
 
 export function Profile({ userProfile, userData, onUpdateProfile }) {
@@ -30,11 +32,50 @@ export function Profile({ userProfile, userData, onUpdateProfile }) {
     email: userProfile.email || '',
     role: userProfile.role,
     goals: userProfile.goals,
+    dailyTimeCommitment: userProfile.dailyTimeCommitment || 15,
+    dailyPointsGoal: userProfile.dailyPointsGoal || 150,
     country: userProfile.country || '',
     churchName: userProfile.churchName || '',
     churchSize: userProfile.churchSize || '',
     website: userProfile.website || ''
   });
+
+  // Password reset states
+  const [currentPassword, setCurrentPassword] = useState('');
+  const [newPassword, setNewPassword] = useState('');
+  const [confirmPassword, setConfirmPassword] = useState('');
+  const [passwordError, setPasswordError] = useState('');
+  const [passwordSuccess, setPasswordSuccess] = useState(false);
+
+  // Calculate password strength
+  const passwordStrength = useMemo(() => {
+    if (!newPassword) return { score: 0, label: '', color: '', percentage: 0 };
+
+    let score = 0;
+    const checks = {
+      length: newPassword.length >= 8,
+      uppercase: /[A-Z]/.test(newPassword),
+      lowercase: /[a-z]/.test(newPassword),
+      number: /[0-9]/.test(newPassword),
+      special: /[^A-Za-z0-9]/.test(newPassword),
+    };
+
+    Object.values(checks).forEach(check => {
+      if (check) score++;
+    });
+
+    if (score <= 1) {
+      return { score, label: 'Weak', color: '#E66E5A', percentage: 20, checks };
+    } else if (score === 2) {
+      return { score, label: 'Fair', color: '#F59E0B', percentage: 40, checks };
+    } else if (score === 3) {
+      return { score, label: 'Good', color: '#9BB88F', percentage: 60, checks };
+    } else if (score === 4) {
+      return { score, label: 'Strong', color: '#7A9B70', percentage: 80, checks };
+    } else {
+      return { score, label: 'Very Strong', color: '#3A4A46', percentage: 100, checks };
+    }
+  }, [newPassword]);
 
   const totalLessonsInCourse = 50;
   const progressPercentage = (userData.lessonsCompleted / totalLessonsInCourse) * 100;
@@ -77,6 +118,43 @@ export function Profile({ userProfile, userData, onUpdateProfile }) {
   const handleSaveProfile = () => {
     onUpdateProfile(editForm);
     setIsEditing(false);
+  };
+
+  const handlePasswordReset = () => {
+    setPasswordError('');
+    setPasswordSuccess(false);
+
+    // Validation
+    if (!currentPassword) {
+      setPasswordError('Please enter your current password');
+      return;
+    }
+
+    if (!newPassword) {
+      setPasswordError('Please enter a new password');
+      return;
+    }
+
+    if (newPassword.length < 8) {
+      setPasswordError('Password must be at least 8 characters');
+      return;
+    }
+
+    if (newPassword !== confirmPassword) {
+      setPasswordError('Passwords do not match');
+      return;
+    }
+
+    // Simulate password reset
+    setPasswordSuccess(true);
+    setCurrentPassword('');
+    setNewPassword('');
+    setConfirmPassword('');
+
+    // Hide success message after 3 seconds
+    setTimeout(() => {
+      setPasswordSuccess(false);
+    }, 3000);
   };
 
   const handleProfilePictureChange = (e) => {
@@ -194,6 +272,65 @@ export function Profile({ userProfile, userData, onUpdateProfile }) {
           </CardContent>
         </Card>
 
+        {/* Edit Form - Daily Goal */}
+        {isEditing && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#3A4A46]">
+                <Target className="w-5 h-5" />
+                <span>Daily Learning Goal</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent>
+              <div className="space-y-4">
+                <div className="space-y-2">
+                  <Label className="text-[#3A4A46]">How much time can you give each day?</Label>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-3">
+                    {[
+                      { time: '5 mins', minutes: 5, goal: 50 },
+                      { time: '15 mins', minutes: 15, goal: 150 },
+                      { time: '30+ mins', minutes: 30, goal: 300 }
+                    ].map((option) => {
+                      const isSelected = editForm.dailyTimeCommitment === option.minutes;
+                      return (
+                        <button
+                          key={option.minutes}
+                          type="button"
+                          onClick={() => setEditForm({
+                            ...editForm,
+                            dailyTimeCommitment: option.minutes,
+                            dailyPointsGoal: option.goal
+                          })}
+                          className={`p-4 rounded-2xl border-2 transition-all shadow-[0_3px_0_0_rgba(58,74,70,0.1)] active:shadow-none active:translate-y-[2px] ${
+                            isSelected
+                              ? 'border-[#3A4A46] bg-[#7A9B70] text-white'
+                              : 'border-[#3A4A46] bg-white text-[#3A4A46] hover:bg-[#FFF8F2]'
+                          }`}
+                        >
+                          <div className="text-center">
+                            <div className="font-bold mb-1">{option.time}</div>
+                            <div className={`text-sm ${isSelected ? 'text-white/90' : 'text-[#6B7B77]'}`}>
+                              {option.goal} pts/day goal
+                            </div>
+                          </div>
+                        </button>
+                      );
+                    })}
+                  </div>
+                </div>
+                <div className="bg-[#FFF8F2] border-2 border-[#3A4A46]/20 rounded-2xl p-4">
+                  <p className="text-sm text-[#6B7B77]">
+                    <span className="font-bold text-[#3A4A46]">Current daily goal:</span> {editForm.dailyPointsGoal} points
+                  </p>
+                  <p className="text-sm text-[#6B7B77] mt-1">
+                    Reach your goal each day to earn streak badges!
+                  </p>
+                </div>
+              </div>
+            </CardContent>
+          </Card>
+        )}
+
         {/* Edit Form - Church Information */}
         {isEditing && (
           <Card>
@@ -269,6 +406,145 @@ export function Profile({ userProfile, userData, onUpdateProfile }) {
                   placeholder="https://yourchurch.org"
                 />
               </div>
+            </CardContent>
+          </Card>
+        )}
+
+        {/* Password Reset Section */}
+        {isEditing && (
+          <Card>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2 text-[#3A4A46]">
+                <Lock className="w-5 h-5" />
+                <span>Change Password</span>
+              </CardTitle>
+            </CardHeader>
+            <CardContent className="space-y-4">
+              {passwordSuccess && (
+                <div className="p-4 bg-[#7A9B70]/20 border-2 border-[#7A9B70] rounded-2xl">
+                  <p className="text-sm text-[#3A4A46] font-medium flex items-center gap-2">
+                    <Check className="w-4 h-4 text-[#7A9B70]" />
+                    Password changed successfully!
+                  </p>
+                </div>
+              )}
+
+              {passwordError && (
+                <div className="p-4 bg-[#E66E5A]/20 border-2 border-[#E66E5A] rounded-2xl">
+                  <p className="text-sm text-[#3A4A46] font-medium">{passwordError}</p>
+                </div>
+              )}
+
+              <div className="space-y-2">
+                <Label htmlFor="currentPassword" className="text-[#3A4A46]">Current Password</Label>
+                <Input
+                  id="currentPassword"
+                  type="password"
+                  value={currentPassword}
+                  onChange={(e) => setCurrentPassword(e.target.value)}
+                  placeholder="Enter your current password"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="newPassword" className="text-[#3A4A46]">New Password</Label>
+                <Input
+                  id="newPassword"
+                  type="password"
+                  value={newPassword}
+                  onChange={(e) => setNewPassword(e.target.value)}
+                  placeholder="Enter new password"
+                />
+                
+                {/* Password Strength Indicator */}
+                {newPassword && (
+                  <div className="space-y-2 pt-1">
+                    <div className="flex items-center justify-between">
+                      <span className="text-xs text-[#6B7B77]">Password Strength:</span>
+                      <span 
+                        className="text-xs font-medium"
+                        style={{ color: passwordStrength.color }}
+                      >
+                        {passwordStrength.label}
+                      </span>
+                    </div>
+                    <div className="h-2 bg-[#F5F0E8] rounded-full overflow-hidden">
+                      <div 
+                        className="h-full transition-all duration-300 rounded-full"
+                        style={{ 
+                          width: `${passwordStrength.percentage}%`,
+                          backgroundColor: passwordStrength.color
+                        }}
+                      />
+                    </div>
+                    
+                    {/* Password Requirements */}
+                    <div className="grid grid-cols-1 md:grid-cols-2 gap-x-4 gap-y-1 pt-2">
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check 
+                          className={`w-3 h-3 ${passwordStrength.checks?.length ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
+                        />
+                        <span className={passwordStrength.checks?.length ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
+                          At least 8 characters
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check 
+                          className={`w-3 h-3 ${passwordStrength.checks?.uppercase ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
+                        />
+                        <span className={passwordStrength.checks?.uppercase ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
+                          One uppercase letter
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check 
+                          className={`w-3 h-3 ${passwordStrength.checks?.lowercase ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
+                        />
+                        <span className={passwordStrength.checks?.lowercase ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
+                          One lowercase letter
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check 
+                          className={`w-3 h-3 ${passwordStrength.checks?.number ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
+                        />
+                        <span className={passwordStrength.checks?.number ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
+                          One number
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 text-xs">
+                        <Check 
+                          className={`w-3 h-3 ${passwordStrength.checks?.special ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
+                        />
+                        <span className={passwordStrength.checks?.special ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
+                          One special character
+                        </span>
+                      </div>
+                    </div>
+                  </div>
+                )}
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-[#3A4A46]">Confirm New Password</Label>
+                <Input
+                  id="confirmPassword"
+                  type="password"
+                  value={confirmPassword}
+                  onChange={(e) => setConfirmPassword(e.target.value)}
+                  placeholder="Confirm new password"
+                />
+                {confirmPassword && newPassword !== confirmPassword && (
+                  <p className="text-xs text-[#E66E5A]">Passwords do not match</p>
+                )}
+              </div>
+
+              <Button 
+                onClick={handlePasswordReset}
+                className="w-full md:w-auto"
+              >
+                Update Password
+              </Button>
             </CardContent>
           </Card>
         )}

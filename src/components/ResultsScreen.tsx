@@ -96,7 +96,7 @@ export function ResultsScreen({
         transition={{ duration: 0.5 }}
       >
         <Card className="w-full max-w-2xl shadow-xl">
-          <CardContent className="p-8 md:p-12 text-center">
+          <CardContent className="p-6 md:p-8 text-center">
             {/* Trophy/Icon */}
             <motion.div
               initial={{ scale: 0 }}
@@ -107,11 +107,11 @@ export function ResultsScreen({
                 damping: 20,
                 delay: 0.2 
               }}
-              className="mx-auto w-24 h-24 mb-6"
+              className="mx-auto w-20 h-20 mb-4"
             >
               {passed ? (
                 <div className="relative">
-                  <Trophy className="w-24 h-24 text-[#F4A460]" />
+                  <Trophy className="w-20 h-20 text-[#F4A460]" />
                   {stars === 3 && (
                     <motion.div
                       animate={{ 
@@ -124,12 +124,12 @@ export function ResultsScreen({
                       }}
                       className="absolute -top-2 -right-2"
                     >
-                      <Sparkles className="w-8 h-8 text-[#7A9B70]" />
+                      <Sparkles className="w-6 h-6 text-[#7A9B70]" />
                     </motion.div>
                   )}
                 </div>
               ) : (
-                <Award className="w-24 h-24 text-[#6B7B77]" />
+                <Award className="w-20 h-20 text-[#6B7B77]" />
               )}
             </motion.div>
 
@@ -147,7 +147,7 @@ export function ResultsScreen({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.4 }}
-              className="text-muted-foreground mb-6"
+              className="text-muted-foreground mb-3 text-sm"
             >
               {pathTitle} • {chapterTitle}
             </motion.p>
@@ -157,7 +157,7 @@ export function ResultsScreen({
               initial={{ scale: 0 }}
               animate={{ scale: 1 }}
               transition={{ delay: 0.5, type: 'spring' }}
-              className="flex justify-center gap-4 mb-8"
+              className="flex justify-center gap-2 mb-4"
             >
               {[1, 2, 3].map((i) => (
                 <motion.div
@@ -171,7 +171,7 @@ export function ResultsScreen({
                   }}
                 >
                   <Star
-                    className={`w-16 h-16 ${
+                    className={`w-12 h-12 ${
                       i <= stars 
                         ? 'fill-[#F4A460] text-[#F4A460]' 
                         : 'fill-gray-200 text-gray-200'
@@ -186,22 +186,22 @@ export function ResultsScreen({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.8 }}
-              className="mb-8"
+              className="mb-5"
             >
-              <div className="text-6xl mb-2">
-                {percentage}<span className="text-3xl text-muted-foreground">%</span>
+              <div className="text-5xl mb-1">
+                {percentage}<span className="text-2xl text-muted-foreground">%</span>
               </div>
-              <div className="text-muted-foreground">
+              <div className="text-muted-foreground text-sm">
                 {questionsCorrect} of {totalQuestions} correct
               </div>
 
               {/* Progress Bar */}
-              <div className="max-w-md mx-auto mt-4">
+              <div className="max-w-md mx-auto mt-3">
                 <Progress value={percentage} className="h-3" />
               </div>
 
               {/* Pass/Fail Indicator */}
-              <div className="mt-4">
+              <div className="mt-3">
                 {passed ? (
                   <Badge className="bg-[#7A9B70]/20 text-[#3A4A46] border-2 border-[#7A9B70] px-4 py-2">
                     <CheckCircle className="w-4 h-4 mr-2" />
@@ -221,21 +221,21 @@ export function ResultsScreen({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: 0.9 }}
-              className="grid grid-cols-2 gap-4 mb-8 max-w-md mx-auto"
+              className="grid grid-cols-2 gap-3 mb-5 max-w-md mx-auto"
             >
-              <div className="bg-[#7A9B70]/20 rounded-2xl p-4 border-2 border-[#7A9B70] shadow-[0_2px_0_0_rgba(122,155,112,0.1)]">
-                <div className="text-[#3A4A46] mb-1">
-                  <CheckCircle className="w-5 h-5 mx-auto" />
+              <div className="bg-[#7A9B70]/20 rounded-2xl p-3 border-2 border-[#7A9B70] shadow-[0_2px_0_0_rgba(122,155,112,0.1)]">
+                <div className="text-[#3A4A46] mb-0.5">
+                  <CheckCircle className="w-4 h-4 mx-auto" />
                 </div>
-                <div className="text-2xl text-[#3A4A46] font-bold">{questionsCorrect}</div>
-                <div className="text-sm text-[#6B7B77]">Correct</div>
+                <div className="text-xl text-[#3A4A46] font-bold">{questionsCorrect}</div>
+                <div className="text-xs text-[#6B7B77]">Correct</div>
               </div>
-              <div className="bg-[#E66E5A]/20 rounded-2xl p-4 border-2 border-[#E66E5A] shadow-[0_2px_0_0_rgba(230,110,90,0.1)]">
-                <div className="text-[#3A4A46] mb-1">
-                  <AlertCircle className="w-5 h-5 mx-auto" />
+              <div className="bg-[#E66E5A]/20 rounded-2xl p-3 border-2 border-[#E66E5A] shadow-[0_2px_0_0_rgba(230,110,90,0.1)]">
+                <div className="text-[#3A4A46] mb-0.5">
+                  <AlertCircle className="w-4 h-4 mx-auto" />
                 </div>
-                <div className="text-2xl text-[#3A4A46] font-bold">{questionsWrong}</div>
-                <div className="text-sm text-[#6B7B77]">Incorrect</div>
+                <div className="text-xl text-[#3A4A46] font-bold">{questionsWrong}</div>
+                <div className="text-xs text-[#6B7B77]">Incorrect</div>
               </div>
             </motion.div>
 
@@ -245,12 +245,12 @@ export function ResultsScreen({
                 initial={{ y: 20, opacity: 0 }}
                 animate={{ y: 0, opacity: 1 }}
                 transition={{ delay: 1 }}
-                className="mb-8 max-w-md mx-auto"
+                className="mb-4 max-w-md mx-auto"
               >
-                <div className="bg-[#FDD6A1]/40 rounded-2xl p-4 border-2 border-[#3A4A46] shadow-[0_2px_0_0_rgba(58,74,70,0.1)]">
-                  <div className="text-sm font-bold text-[#3A4A46] mb-3">Points Earned</div>
+                <div className="bg-[#FDD6A1]/40 rounded-2xl p-3 border-2 border-[#3A4A46] shadow-[0_2px_0_0_rgba(58,74,70,0.1)]">
+                  <div className="text-xs font-bold text-[#3A4A46] mb-2">Points Earned</div>
                   
-                  <div className="space-y-2 text-sm text-[#3A4A46]">
+                  <div className="space-y-1.5 text-xs text-[#3A4A46]">
                     <div className="flex justify-between">
                       <span>Question Points:</span>
                       <span className="font-bold">+{score}</span>
@@ -270,9 +270,9 @@ export function ResultsScreen({
                       </div>
                     )}
                     
-                    <div className="border-t-2 border-[#3A4A46] pt-2 mt-2 flex justify-between">
+                    <div className="border-t-2 border-[#3A4A46] pt-1.5 mt-1.5 flex justify-between">
                       <span className="font-bold">Total Points:</span>
-                      <span className="font-bold text-lg text-[#3A4A46]">{totalScore}</span>
+                      <span className="font-bold text-sm text-[#3A4A46]">{totalScore}</span>
                     </div>
                   </div>
                 </div>
@@ -284,9 +284,9 @@ export function ResultsScreen({
               initial={{ y: 20, opacity: 0 }}
               animate={{ y: 0, opacity: 1 }}
               transition={{ delay: passed ? 1.2 : 1 }}
-              className="mb-8 p-4 bg-[#7A9B70]/20 rounded-2xl border-2 border-[#7A9B70] shadow-[0_2px_0_0_rgba(122,155,112,0.1)]"
+              className="mb-5 p-3 bg-[#7A9B70]/20 rounded-2xl border-2 border-[#7A9B70] shadow-[0_2px_0_0_rgba(122,155,112,0.1)]"
             >
-              <p className="text-[#3A4A46] font-medium">
+              <p className="text-[#3A4A46] font-medium text-sm">
                 {percentage >= 90 && "Outstanding work! You've mastered this chapter."}
                 {percentage >= 70 && percentage < 90 && "Great job! You're making excellent progress."}
                 {percentage >= 50 && percentage < 70 && "Good effort! Review the missed questions to strengthen your understanding."}
@@ -353,9 +353,9 @@ export function ResultsScreen({
                 initial={{ scale: 0 }}
                 animate={{ scale: 1 }}
                 transition={{ delay: 1.5, type: 'spring' }}
-                className="mt-6 flex items-center justify-center gap-2 text-[#7A9B70] font-bold"
+                className="mt-4 flex items-center justify-center gap-2 text-[#7A9B70] font-bold text-sm"
               >
-                <TrendingUp className="w-5 h-5" />
+                <TrendingUp className="w-4 h-4" />
                 <span>+{totalScore} XP earned!</span>
               </motion.div>
             )}

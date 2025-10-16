@@ -598,7 +598,8 @@ export function Dashboard({ userProfile, userData, onStartScenario, onViewCourse
           </Card>
 
           {/* Quick Actions */}
-          <Card>
+          {/* Quick Actions card hidden */}
+          {/* <Card>
             <CardHeader>
               <CardTitle>Quick Actions</CardTitle>
             </CardHeader>
@@ -616,7 +617,7 @@ export function Dashboard({ userProfile, userData, onStartScenario, onViewCourse
                 View Achievements
               </Button>
             </CardContent>
-          </Card>
+          </Card> */}
         </div>
       </div>
     </div>

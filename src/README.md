@@ -225,6 +225,12 @@ church-academy/
 
 ## 📚 Documentation
 
+### 🆕 Latest Updates (Jan 16, 2025)
+- **[RECENT_UPDATES.md](RECENT_UPDATES.md)** - Latest session changes summary
+- **[CHANGELOG.md](CHANGELOG.md)** - Complete version history
+- **[FEATURE_COMPARISON.md](FEATURE_COMPARISON.md)** - Before/after comparison
+
+### Core Documentation
 Comprehensive documentation is available in the `/guidelines` folder:
 
 - **[Clay-Style-Guide.md](guidelines/Clay-Style-Guide.md)** - Complete design system

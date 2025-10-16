@@ -228,7 +228,7 @@ export function Leaderboard({ userData }) {
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-[#3A4A46]">
                   <Medal className="w-5 h-5" />
-                  <span>Top Achievements</span>
+                  <span>Your Badges</span>
                 </CardTitle>
               </CardHeader>
               <CardContent className="space-y-4">
@@ -254,7 +254,8 @@ export function Leaderboard({ userData }) {
               </CardContent>
             </Card>
 
-            <Card>
+            {/* Community section hidden */}
+            {/* <Card>
               <CardHeader>
                 <CardTitle className="flex items-center gap-2 text-[#3A4A46]">
                   <Users className="w-5 h-5" />
@@ -271,7 +272,7 @@ export function Leaderboard({ userData }) {
                   Find Study Partners
                 </Button>
               </CardContent>
-            </Card>
+            </Card> */}
           </div>
         </div>
       </div>

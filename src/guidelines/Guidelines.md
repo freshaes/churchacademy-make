@@ -242,9 +242,11 @@ function LearningScenario({ onComplete, userData }) {
   id: 1,
   title: "Leadership Fundamentals",
   description: "Master essential principles...",
-  difficulty: "Beginner",
-  duration: "4 weeks",
+  difficulty: "Foundation", // or "Intermediate", "Expert"
+  estimatedTime: "6 hours", // or "4 weeks", etc.
+  categories: ["Leadership", "Team Building"],
   thumbnailUrl: "https://...",
+  xpReward: 300,
   status: "published",
   targetRoles: ["Senior Pastor", "Youth Minister"],
   targetGoals: ["Lead with Confidence", "Develop Your People"],
@@ -376,7 +378,13 @@ function App() {
 
 ### Navigation Flow
 1. **Login** → Onboarding (first time) or Dashboard (returning)
-2. **Onboarding** → Dashboard
+2. **Onboarding** (6 steps):
+   - Role selection
+   - Goals (multi-select)
+   - Time commitment
+   - Account creation
+   - Church info
+   - **Recommended Path** (single selection)
 3. **Dashboard** → Learning Scenario / Browse / Profile / Leaderboard / Admin
 4. **Learning Scenario** → Results Screen → Dashboard
 5. **Admin** (separate flow) → Admin Dashboard → Path Editor / User Manager
@@ -485,7 +493,17 @@ Shows:
 
 ### PathEditorFull
 - Comprehensive path editing
-- Basic info (title, description, status)
+- **Basic Information Card:**
+  - Title and description
+  - Difficulty level (Foundation/Intermediate/Expert)
+  - Estimated time (text: "6 hours", "4 weeks", etc.)
+  - XP reward (total points for completion)
+  - Thumbnail image URL with live preview
+  - Published/Draft status toggle
+- **Categories Card:**
+  - 12 category options (Leadership, Communication, etc.)
+  - Multi-select checkboxes
+  - Badge preview of selected categories
 - Target roles & goals selection
 - Chapter and question management
 - Media attachment (image/video URLs)
@@ -695,6 +713,32 @@ Potential features for expansion:
 
 ---
 
+## Recent Updates
+
+### Latest Changes (Current Session - Jan 16, 2025)
+
+**Admin Panel Enhancements:**
+- ✅ Added 5 new fields to PathEditorFull:
+  - Difficulty Level (Foundation/Intermediate/Expert)
+  - Estimated Time (text input)
+  - Categories (12 multi-select options)
+  - XP Reward (number input)
+  - Thumbnail Image URL (with live preview)
+- ✅ All fields now match front-end Browse/CourseDetail displays
+- ✅ Categories section with badge preview
+- ✅ Updated Learning Path data structure
+
+**Onboarding Improvements:**
+- ✅ Changed from multi-path to single-path selection
+- ✅ Renamed "Personalized Paths" → "Recommended Path"
+- ✅ Simplified UX: choose one path to start
+- ✅ Updated state management and validation
+- ✅ Clearer helper text and instructions
+
+**See [CHANGELOG.md](/CHANGELOG.md) for detailed update history.**
+
+---
+
 ## Version History
 
 **Current Version**: 1.0 - Full Prototype
@@ -709,4 +753,4 @@ Potential features for expansion:
 - Results screen with bonus points
 - Leaderboard system
 
-**Last Updated**: January 2025
+**Last Updated**: January 16, 2025

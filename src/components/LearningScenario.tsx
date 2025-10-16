@@ -1476,7 +1476,7 @@ function BlankSlot({ blankIndex, filledWord, onDrop, onRemove, isCorrect, showFe
       isOver: monitor.isOver(),
       canDrop: monitor.canDrop()
     })
-  }), [showFeedback, blankIndex]);
+  }), [showFeedback, blankIndex, onDrop]);
 
   // Make filled slots draggable too
   const [{ isDragging }, drag] = useDrag(() => ({
@@ -1938,10 +1938,10 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
   };
 
   const handleBlankSelect = (blankIndex, value) => {
-    setSelectedBlankAnswers({
-      ...selectedBlankAnswers,
+    setSelectedBlankAnswers((prevAnswers) => ({
+      ...prevAnswers,
       [blankIndex]: value
-    });
+    }));
   };
 
   const handleSubmit = () => {

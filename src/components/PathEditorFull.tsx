@@ -48,6 +48,27 @@ const goalOptions = [
   'Develop Your People'
 ];
 
+const categoryOptions = [
+  'Leadership',
+  'Communication',
+  'Team Building',
+  'Community',
+  'Relationships',
+  'Conflict Resolution',
+  'Spiritual Growth',
+  'Ministry Skills',
+  'Administration',
+  'Worship',
+  'Youth Ministry',
+  'Pastoral Care'
+];
+
+const difficultyOptions = [
+  { value: 'Foundation', label: 'Foundation', description: 'Perfect for beginners' },
+  { value: 'Intermediate', label: 'Intermediate', description: 'Some experience helpful' },
+  { value: 'Expert', label: 'Expert', description: 'Advanced concepts' }
+];
+
 const questionTypes = [
   { value: 'content', label: 'Content Slide' },
   { value: 'multiple-choice', label: 'Multiple Choice' },
@@ -62,6 +83,11 @@ const dummyPathData = {
   id: 1,
   title: 'Leadership Fundamentals',
   description: 'Master the essential principles of servant leadership in a church context.',
+  difficulty: 'Intermediate',
+  estimatedTime: '6 hours',
+  categories: ['Leadership', 'Team Building'],
+  thumbnailUrl: '',
+  xpReward: 300,
   goals: [
     'Understand collaborative decision-making',
     'Practice servant leadership principles',
@@ -919,6 +945,13 @@ export function PathEditorFull({ pathId, onSave, onCancel }) {
     setPathData({ ...pathData, targetGoals: goals });
   };
 
+  const toggleCategory = (category) => {
+    const categories = pathData.categories?.includes(category)
+      ? pathData.categories.filter(c => c !== category)
+      : [...(pathData.categories || []), category];
+    setPathData({ ...pathData, categories });
+  };
+
   const addChapter = () => {
     setPathData({
       ...pathData,
@@ -1023,6 +1056,64 @@ export function PathEditorFull({ pathId, onSave, onCancel }) {
                 rows={3}
               />
             </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div>
+                <Label htmlFor="difficulty">Difficulty Level</Label>
+                <Select value={pathData.difficulty} onValueChange={(value) => updatePath('difficulty', value)}>
+                  <SelectTrigger id="difficulty">
+                    <SelectValue placeholder="Select difficulty..." />
+                  </SelectTrigger>
+                  <SelectContent>
+                    {difficultyOptions.map(option => (
+                      <SelectItem key={option.value} value={option.value}>
+                        {option.label} - {option.description}
+                      </SelectItem>
+                    ))}
+                  </SelectContent>
+                </Select>
+              </div>
+
+              <div>
+                <Label htmlFor="estimatedTime">Estimated Time</Label>
+                <Input
+                  id="estimatedTime"
+                  value={pathData.estimatedTime || ''}
+                  onChange={(e) => updatePath('estimatedTime', e.target.value)}
+                  placeholder="e.g., 6 hours, 4 weeks"
+                />
+              </div>
+            </div>
+
+            <div>
+              <Label htmlFor="xpReward">XP Reward</Label>
+              <Input
+                id="xpReward"
+                type="number"
+                value={pathData.xpReward || 300}
+                onChange={(e) => updatePath('xpReward', parseInt(e.target.value) || 0)}
+                placeholder="300"
+                min="0"
+              />
+              <p className="text-xs text-muted-foreground mt-1">Total experience points earned for completing this path</p>
+            </div>
+
+            <div>
+              <Label htmlFor="thumbnailUrl">Thumbnail Image URL</Label>
+              <Input
+                id="thumbnailUrl"
+                value={pathData.thumbnailUrl || ''}
+                onChange={(e) => updatePath('thumbnailUrl', e.target.value)}
+                placeholder="https://images.unsplash.com/..."
+              />
+              {pathData.thumbnailUrl && (
+                <div className="mt-2 border-2 border-[#3A4A46] rounded-2xl overflow-hidden">
+                  <img src={pathData.thumbnailUrl} alt="Path thumbnail preview" className="w-full h-40 object-cover" />
+                </div>
+              )}
+              <p className="text-xs text-muted-foreground mt-1">This image appears on the Browse Lessons page</p>
+            </div>
+            
             <div className="flex items-center space-x-2">
               <Switch
                 id="publish"
@@ -1081,6 +1172,38 @@ export function PathEditorFull({ pathId, onSave, onCancel }) {
                 </div>
               ))}
             </div>
+          </CardContent>
+        </Card>
+
+        {/* Categories */}
+        <Card>
+          <CardHeader>
+            <CardTitle>Categories</CardTitle>
+            <CardDescription>Tag this path with relevant categories for filtering and discovery</CardDescription>
+          </CardHeader>
+          <CardContent>
+            <div className="grid grid-cols-2 md:grid-cols-3 gap-3">
+              {categoryOptions.map(category => (
+                <div key={category} className="flex items-center space-x-2">
+                  <Checkbox
+                    id={`category-${category}`}
+                    checked={pathData.categories?.includes(category)}
+                    onCheckedChange={() => toggleCategory(category)}
+                  />
+                  <Label htmlFor={`category-${category}`} className="cursor-pointer">{category}</Label>
+                </div>
+              ))}
+            </div>
+            {pathData.categories && pathData.categories.length > 0 && (
+              <div className="mt-4 pt-4 border-t">
+                <p className="text-sm text-muted-foreground mb-2">Selected categories:</p>
+                <div className="flex flex-wrap gap-2">
+                  {pathData.categories.map(cat => (
+                    <Badge key={cat} variant="secondary">{cat}</Badge>
+                  ))}
+                </div>
+              </div>
+            )}
           </CardContent>
         </Card>
 

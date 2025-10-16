@@ -424,10 +424,6 @@ export function BrowseLessons({ onStartPath, userProfile, onViewCourse }) {
                     <div className={`w-14 h-14 rounded-2xl ${path.color} border-2 border-[#3A4A46] shadow-[0_3px_0_0_rgba(58,74,70,0.15)] flex items-center justify-center`}>
                       <IconComponent className="w-7 h-7 text-white" />
                     </div>
-                    <div className="flex items-center gap-1">
-                      <Star className="w-4 h-4 fill-[#F4A460] text-[#F4A460]" />
-                      <span className="text-sm font-bold text-[#3A4A46]">{path.rating}</span>
-                    </div>
                   </div>
 
                   {/* Title & Description */}

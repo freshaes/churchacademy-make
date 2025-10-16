@@ -207,7 +207,7 @@ export function Navigation({ currentView, onNavigate, userProfile, userData, onU
       )}
 
       {/* Desktop Sidebar */}
-      <div className="hidden lg:block fixed left-0 top-0 w-80 h-full bg-[#FFF8F2] border-r-4 border-[#3A4A46] p-6 overflow-y-auto flex flex-col">
+      <div className="hidden lg:flex fixed left-0 top-0 w-80 h-full bg-[#FFF8F2] border-r-4 border-[#3A4A46] p-6 overflow-y-auto flex-col">
         <NavContent />
       </div>
     </>
