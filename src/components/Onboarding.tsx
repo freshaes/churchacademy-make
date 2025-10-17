@@ -191,6 +191,7 @@ export function Onboarding({ onComplete, onNavigateToLogin }) {
   const [dailyTimeCommitment, setDailyTimeCommitment] = useState(null);
   const [firstName, setFirstName] = useState('');
   const [lastName, setLastName] = useState('');
+  const [username, setUsername] = useState('');
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [country, setCountry] = useState('');
@@ -271,6 +272,7 @@ export function Onboarding({ onComplete, onNavigateToLogin }) {
       name: `${firstName} ${lastName}`.trim(),
       firstName,
       lastName,
+      username,
       email,
       password,
       role: selectedRole,
@@ -479,6 +481,17 @@ export function Onboarding({ onComplete, onNavigateToLogin }) {
                     onChange={(e) => setLastName(e.target.value)}
                   />
                 </div>
+              </div>
+              
+              <div className="space-y-2">
+                <Label htmlFor="username" className="text-[#3A4A46]">Username</Label>
+                <Input
+                  id="username"
+                  type="text"
+                  placeholder="Choose a unique username"
+                  value={username}
+                  onChange={(e) => setUsername(e.target.value)}
+                />
               </div>
               
               <div className="space-y-2">
@@ -782,7 +795,7 @@ export function Onboarding({ onComplete, onNavigateToLogin }) {
                   (step === 1 && !selectedRole) ||
                   (step === 2 && selectedGoals.length < 1) ||
                   (step === 3 && !dailyTimeCommitment) ||
-                  (step === 4 && (!firstName.trim() || !lastName.trim() || !email.trim() || !email.includes('@')))
+                  (step === 4 && (!firstName.trim() || !lastName.trim() || !username.trim() || !email.trim() || !email.includes('@')))
                 }
               >
                 Next <ChevronRight className="w-4 h-4 ml-1" />

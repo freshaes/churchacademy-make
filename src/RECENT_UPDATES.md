@@ -99,6 +99,20 @@ Step 6 of onboarding now allows **selecting only ONE path** instead of multiple 
 ### Updated Helper Text
 > 💡 Choose the path that interests you most. You can explore other paths anytime from your dashboard!
 
+### Username Field Added
+- ✅ New username field in Step 4 (Account Creation)
+- ✅ Positioned above email address
+- ✅ Required field with validation
+- ✅ Placeholder: "Choose a unique username"
+- ✅ Added to user data structure
+
+### Login Page Simplified
+- ✅ Removed password strength indicator from Login.tsx
+- ✅ Password strength kept in Onboarding.tsx only
+- ✅ Cleaner login experience for returning users
+- ✅ No visual feedback during password entry
+- ✅ Validation only happens on form submit
+
 ---
 
 ## 📁 3. File Structure Fixes
@@ -123,8 +137,11 @@ These should remain simple text files and not be converted to directories.
 
 ### Updated
 - ✅ `/components/PathEditorFull.tsx` - Added 5 metadata fields + categories section
-- ✅ `/components/Onboarding.tsx` - Single path selection + terminology change
+- ✅ `/components/Onboarding.tsx` - Single path selection + terminology change + username field
+- ✅ `/components/Login.tsx` - Removed password strength indicator (streamlined)
 - ✅ `/guidelines/Guidelines.md` - Updated data structures and recent changes section
+- ✅ `/CHANGELOG.md` - Updated with username field and login simplification
+- ✅ `/RECENT_UPDATES.md` - Updated with all changes
 
 ### Restored (Multiple Times)
 - ✅ `/LICENSE`

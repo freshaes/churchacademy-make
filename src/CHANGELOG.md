@@ -75,11 +75,25 @@ Changed the onboarding path recommendation step from multi-select to single-sele
    - Now uses "Recommended" throughout
    - More accurate - paths are recommended based on role/goals
 
+4. **Username Field Added:**
+   - Added username field in Step 4 (Account Creation)
+   - Positioned above email address
+   - Required field with validation
+   - Username included in user data structure
+
+5. **Login Page Streamlined:**
+   - Removed password strength indicator from Login.tsx
+   - Password strength kept in Onboarding.tsx for new account creation
+   - Cleaner, simpler login experience for returning users
+   - No visual feedback during password entry (login only validates on submit)
+
 **Benefits:**
 - Simpler decision making for new users
 - Clearer onboarding flow
 - Reduced cognitive load
 - Users can explore more paths after onboarding
+- Unique username for better user identification
+- Faster, distraction-free login for returning users
 
 ---
 

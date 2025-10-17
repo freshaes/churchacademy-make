@@ -1,48 +1,15 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState } from 'react';
 import { Button } from './ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from './ui/card';
 import { Input } from './ui/input';
 import { Label } from './ui/label';
-import { Progress } from './ui/progress';
-import { Church, Mail, Lock, AlertCircle, Check } from 'lucide-react';
+import { Church, Mail, Lock, AlertCircle } from 'lucide-react';
 import { Alert, AlertDescription } from './ui/alert';
 
 export function Login({ onLogin, onBackToOnboarding }) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [error, setError] = useState('');
-
-  // Calculate password strength
-  const passwordStrength = useMemo(() => {
-    if (!password) return { score: 0, label: '', color: '', percentage: 0 };
-
-    let score = 0;
-    const checks = {
-      length: password.length >= 8,
-      uppercase: /[A-Z]/.test(password),
-      lowercase: /[a-z]/.test(password),
-      number: /[0-9]/.test(password),
-      special: /[^A-Za-z0-9]/.test(password),
-    };
-
-    // Count how many checks pass
-    Object.values(checks).forEach(check => {
-      if (check) score++;
-    });
-
-    // Determine strength level
-    if (score <= 1) {
-      return { score, label: 'Weak', color: '#E66E5A', percentage: 20, checks };
-    } else if (score === 2) {
-      return { score, label: 'Fair', color: '#F59E0B', percentage: 40, checks };
-    } else if (score === 3) {
-      return { score, label: 'Good', color: '#9BB88F', percentage: 60, checks };
-    } else if (score === 4) {
-      return { score, label: 'Strong', color: '#7A9B70', percentage: 80, checks };
-    } else {
-      return { score, label: 'Very Strong', color: '#3A4A46', percentage: 100, checks };
-    }
-  }, [password]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -122,74 +89,6 @@ export function Login({ onLogin, onBackToOnboarding }) {
                   className="pl-11"
                 />
               </div>
-              
-              {/* Password Strength Indicator */}
-              {password && (
-                <div className="space-y-2 pt-1">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs text-[#6B7B77]">Password Strength:</span>
-                    <span 
-                      className="text-xs font-medium"
-                      style={{ color: passwordStrength.color }}
-                    >
-                      {passwordStrength.label}
-                    </span>
-                  </div>
-                  <div className="h-2 bg-[#F5F0E8] rounded-full overflow-hidden">
-                    <div 
-                      className="h-full transition-all duration-300 rounded-full"
-                      style={{ 
-                        width: `${passwordStrength.percentage}%`,
-                        backgroundColor: passwordStrength.color
-                      }}
-                    />
-                  </div>
-                  
-                  {/* Password Requirements */}
-                  <div className="space-y-1 pt-2">
-                    <div className="flex items-center gap-2 text-xs">
-                      <Check 
-                        className={`w-3 h-3 ${passwordStrength.checks?.length ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
-                      />
-                      <span className={passwordStrength.checks?.length ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
-                        At least 8 characters
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Check 
-                        className={`w-3 h-3 ${passwordStrength.checks?.uppercase ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
-                      />
-                      <span className={passwordStrength.checks?.uppercase ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
-                        One uppercase letter
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Check 
-                        className={`w-3 h-3 ${passwordStrength.checks?.lowercase ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
-                      />
-                      <span className={passwordStrength.checks?.lowercase ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
-                        One lowercase letter
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Check 
-                        className={`w-3 h-3 ${passwordStrength.checks?.number ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
-                      />
-                      <span className={passwordStrength.checks?.number ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
-                        One number
-                      </span>
-                    </div>
-                    <div className="flex items-center gap-2 text-xs">
-                      <Check 
-                        className={`w-3 h-3 ${passwordStrength.checks?.special ? 'text-[#7A9B70]' : 'text-[#D1D5D3]'}`} 
-                      />
-                      <span className={passwordStrength.checks?.special ? 'text-[#3A4A46]' : 'text-[#6B7B77]'}>
-                        One special character
-                      </span>
-                    </div>
-                  </div>
-                </div>
-              )}
             </div>
 
             <div className="flex items-center justify-between text-sm">

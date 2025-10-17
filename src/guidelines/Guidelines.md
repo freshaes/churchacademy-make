@@ -219,6 +219,7 @@ function LearningScenario({ onComplete, userData }) {
 ```javascript
 {
   id: 1,
+  username: "johndoe",
   email: "user@church.org",
   name: "John Doe",
   role: "Youth Minister",
@@ -731,9 +732,15 @@ Potential features for expansion:
 **Onboarding Improvements:**
 - ✅ Changed from multi-path to single-path selection
 - ✅ Renamed "Personalized Paths" → "Recommended Path"
+- ✅ **Added username field** above email address in step 4
 - ✅ Simplified UX: choose one path to start
 - ✅ Updated state management and validation
 - ✅ Clearer helper text and instructions
+
+**Login Page Streamlined:**
+- ✅ Removed password strength indicator from login (kept in onboarding only)
+- ✅ Simpler login experience - no validation feedback during entry
+- ✅ Clean, minimal form for returning users
 
 **See [CHANGELOG.md](/CHANGELOG.md) for detailed update history.**
 
