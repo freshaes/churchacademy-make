@@ -13,8 +13,9 @@ Complete development guidelines for the ChurchAcademy platform - a comprehensive
 ### Core Features
 - Personalized onboarding with role selection
 - Structured learning paths with hierarchical chapters
-- 6 interactive question types (including drag-and-drop, matching, fill-in-blank)
+- 7 interactive question types (including drag-and-drop, matching, fill-in-blank, reflection)
 - Gamification (lives, hints, points, badges, leaderboards)
+- Reflection system with admin feedback
 - Comprehensive admin panel for content management
 - Clay-style UI inspired by Duolingo
 - Profile management with avatar upload
@@ -60,12 +61,14 @@ Complete development guidelines for the ChurchAcademy platform - a comprehensive
 │   ├── BrowseLessons.tsx           # Course browsing page
 │   ├── CourseDetail.tsx            # Individual course details
 │   ├── Profile.tsx                 # User profile with avatar upload
+│   ├── MyReflections.tsx           # User reflection submissions & feedback
 │   ├── Leaderboard.tsx             # Global rankings
 │   ├── AdminDashboard.tsx          # Admin control panel
 │   ├── PathEditor.tsx              # Path management interface
 │   ├── PathEditorFull.tsx          # Detailed path editor
 │   ├── UserManager.tsx             # User administration
 │   ├── BadgeManager.tsx            # Badge system management
+│   ├── AdminReflections.tsx        # Admin feedback on reflections
 │   ├── figma/
 │   │   └── ImageWithFallback.tsx   # Protected component for images
 │   └── ui/                          # Shadcn components (40+ components)
@@ -265,11 +268,11 @@ function LearningScenario({ onComplete, userData }) {
 ```javascript
 {
   id: 1,
-  type: "multiple-choice", // or: content, true-false, multiple-answer, matching, fill-blank
+  type: "multiple-choice", // or: content, true-false, multiple-answer, matching, fill-blank, reflection
   question: "Your question text here",
   imageUrl: "https://...", // optional
   videoUrl: "https://...", // optional
-  hint: "Helpful clue...", // optional
+  hint: "Helpful clue...", // optional (not for reflection type)
   points: 5,
   options: [
     {
@@ -281,6 +284,27 @@ function LearningScenario({ onComplete, userData }) {
       correct: true
     }
   ]
+  // For reflection questions, options array is empty
+}
+```
+
+### Reflection Data Structure
+```javascript
+{
+  id: 1,
+  userId: 123,
+  username: "johndoe",
+  pathId: 5,
+  pathTitle: "Leadership Fundamentals",
+  chapterId: 2,
+  chapterTitle: "Building Trust",
+  questionId: 15,
+  question: "How will you apply this principle in your ministry?",
+  response: "User's thoughtful reflection text...",
+  submittedAt: "2025-11-01T14:30:00Z",
+  adminFeedback: "Great insight! Consider also...", // optional
+  feedbackBy: "admin@church.org", // optional
+  feedbackAt: "2025-11-01T16:45:00Z" // optional
 }
 ```
 
@@ -386,10 +410,11 @@ function App() {
    - Account creation
    - Church info
    - **Recommended Path** (single selection)
-3. **Dashboard** → Learning Scenario / Browse / Profile / Leaderboard / Admin
+3. **Dashboard** → Learning Scenario / Browse / Profile / My Reflections / Leaderboard / Admin
 4. **Learning Scenario** → Results Screen → Dashboard
-5. **Admin** (separate flow) → Admin Dashboard → Path Editor / User Manager
-6. **Logout** → Logout Screen → Login (with "Back to Login" button)
+5. **My Reflections** → View submitted reflections and admin feedback
+6. **Admin** (separate flow) → Admin Dashboard → Path Editor / User Manager / Admin Reflections
+7. **Logout** → Logout Screen → Login (with "Back to Login" button)
 
 For detailed flow diagrams including all question types, admin flows, and gamification logic, see **[FLOW_DIAGRAM.md](/FLOW_DIAGRAM.md)**.
 
@@ -397,7 +422,7 @@ For detailed flow diagrams including all question types, admin flows, and gamifi
 
 ## Question Types Implementation
 
-### 6 Question Types
+### 7 Question Types
 
 1. **Content Slide** (`type: 'content'`)
    - No answer required
@@ -428,10 +453,17 @@ For detailed flow diagrams including all question types, admin flows, and gamifi
    - Multiple blanks possible
    - Word bank provided
 
+7. **Reflection** (`type: 'reflection'`)
+   - Open-ended text response
+   - Textarea for thoughtful answers
+   - No right/wrong - always awards full points
+   - Submissions saved for admin review
+   - Admins can provide feedback
+
 ### Universal Features (All Types)
 - Optional `imageUrl` - Shows image above question
 - Optional `videoUrl` - Shows video above question
-- Optional `hint` - Costs 1 hint to reveal
+- Optional `hint` - Costs 1 hint to reveal (not applicable to reflection type)
 - `points` - Score value for question
 
 ---
@@ -477,15 +509,39 @@ Shows:
 - Podium display (top 3)
 - Rank badges for all users
 
+### Reflection System
+- **User Side (MyReflections Page)**:
+  - View all submitted reflections chronologically
+  - See path, chapter, and question context
+  - View admin feedback when provided
+  - Visual indicators for feedback status
+  - Filter and search capabilities
+  - Proper layout with `lg:ml-80` for sidebar
+  
+- **Admin Side (AdminReflections Component)**:
+  - Review all user reflection submissions
+  - Filter by user, path, or review status
+  - Provide personalized feedback
+  - Track feedback history with timestamps
+  - User context displayed for each reflection
+  
+- **In Learning Flow**:
+  - Reflection questions appear in chapter sequences
+  - Text area for thoughtful responses
+  - Auto-saves user input
+  - Always awards full points (no wrong answers)
+  - Encourages deeper learning and application
+
 ---
 
 ## Admin Features
 
 ### Admin Dashboard
-- Tab-based interface (Paths, Users, Badges)
+- Tab-based interface (Paths, Users, Badges, Reflections)
 - Create/Edit/Delete learning paths
 - User management with role assignment
 - Badge creation and awarding
+- Review and provide feedback on user reflections
 
 ### Path Editor
 - Quick path management list
@@ -508,7 +564,7 @@ Shows:
 - Target roles & goals selection
 - Chapter and question management
 - Media attachment (image/video URLs)
-- All 6 question types supported
+- All 7 question types supported (including reflection)
 - Drag-and-drop question ordering
 
 ### User Manager
@@ -523,6 +579,13 @@ Shows:
 - Set name, description, rarity
 - Upload badge icons (prototype)
 - Award to specific users
+
+### Admin Reflections
+- View all user reflection submissions
+- Filter by user, path, or chapter
+- Provide personalized feedback on reflections
+- Track which reflections have been reviewed
+- Chronological display with user context
 
 ---
 
@@ -567,12 +630,39 @@ Shows:
 ### Navigation
 - Desktop: Fixed sidebar (w-80)
 - Mobile: Hidden sidebar, hamburger menu
-- Adjust spacing: `lg:ml-80` on main content
+- **Critical**: Adjust spacing: `lg:ml-80` on main content pages
+- **Layout Pattern**: Pages should NOT try to be full-page layouts
+- **Correct Pattern**: Use `lg:ml-80` to account for sidebar, not `lg:pl-80`
+- All content pages (Profile, BrowseLessons, MyReflections, etc.) must follow this pattern
 
 ### Components
 - Learning cards: 1 column mobile, 2-3 desktop
 - Question layouts: Full width mobile, max-w on desktop
 - Forms: Stack on mobile, side-by-side on desktop
+
+### Common Layout Patterns
+
+**Standard Content Page (with Navigation sidebar)**:
+```tsx
+export function ContentPage() {
+  return (
+    <>
+      <Navigation currentPage="content" onNavigate={...} userData={...} />
+      <div className="min-h-screen bg-[var(--cream)] lg:ml-80">
+        <div className="max-w-4xl mx-auto px-4 py-8">
+          {/* Page content */}
+        </div>
+      </div>
+    </>
+  );
+}
+```
+
+**Key Points**:
+- ❌ **Wrong**: Using `lg:pl-80` (padding pushes content but doesn't account for sidebar)
+- ✅ **Correct**: Using `lg:ml-80` (margin-left pushes entire container past sidebar)
+- Do NOT try to make the page a full-screen layout - work WITH the Navigation sidebar
+- Examples to follow: Profile.tsx, BrowseLessons.tsx, MyReflections.tsx
 
 ---
 
@@ -606,8 +696,11 @@ Shows:
 - [ ] Screen reader friendly (test with screen reader)
 - [ ] Lives/hints system functions correctly
 - [ ] Points calculation accurate
-- [ ] All question types work
+- [ ] All 7 question types work (including reflection)
+- [ ] Reflection submissions save correctly
+- [ ] Admin feedback displays on MyReflections page
 - [ ] Admin features functional
+- [ ] Content pages use `lg:ml-80` layout (no overlap with sidebar)
 
 ### Browser Support
 - Chrome/Edge (latest)
@@ -716,31 +809,39 @@ Potential features for expansion:
 
 ## Recent Updates
 
-### Latest Changes (Current Session - Jan 16, 2025)
+### Latest Changes (Current Session - Nov 1, 2025)
 
-**Admin Panel Enhancements:**
-- ✅ Added 5 new fields to PathEditorFull:
-  - Difficulty Level (Foundation/Intermediate/Expert)
-  - Estimated Time (text input)
-  - Categories (12 multi-select options)
-  - XP Reward (number input)
-  - Thumbnail Image URL (with live preview)
+**Reflection System Implementation:**
+- ✅ Added 7th question type: Reflection (open-ended text responses)
+- ✅ Created MyReflections page for users to view submissions and feedback
+- ✅ Created AdminReflections component for admin review and feedback
+- ✅ Implemented reflection data structure with admin feedback support
+- ✅ Added proper routing throughout app (Navigation, App.tsx, AdminDashboard)
+- ✅ Reflection questions always award full points (no right/wrong answers)
+- ✅ Admin feedback system with timestamp and author tracking
+
+**Critical UI Layout Fix:**
+- ✅ Fixed MyReflections page layout issue (content was overlapping/hidden)
+- ✅ Changed from full-page layout to proper sidebar-aware layout
+- ✅ Now uses `lg:ml-80` pattern (not `lg:pl-80`) to account for Navigation sidebar
+- ✅ Follows same layout pattern as Profile, BrowseLessons, and other content pages
+- ✅ Documented proper layout pattern in guidelines to prevent future issues
+
+**Previous Session Updates (Jan 16, 2025):**
+
+_Admin Panel Enhancements:_
+- ✅ Added 5 new fields to PathEditorFull (Difficulty, Time, Categories, XP, Thumbnail)
 - ✅ All fields now match front-end Browse/CourseDetail displays
 - ✅ Categories section with badge preview
-- ✅ Updated Learning Path data structure
 
-**Onboarding Improvements:**
+_Onboarding Improvements:_
 - ✅ Changed from multi-path to single-path selection
 - ✅ Renamed "Personalized Paths" → "Recommended Path"
-- ✅ **Added username field** above email address in step 4
-- ✅ Simplified UX: choose one path to start
-- ✅ Updated state management and validation
-- ✅ Clearer helper text and instructions
+- ✅ Added username field above email address in step 4
 
-**Login Page Streamlined:**
-- ✅ Removed password strength indicator from login (kept in onboarding only)
-- ✅ Simpler login experience - no validation feedback during entry
-- ✅ Clean, minimal form for returning users
+_Login Page Streamlined:_
+- ✅ Removed password strength indicator from login
+- ✅ Simpler login experience for returning users
 
 **See [CHANGELOG.md](/CHANGELOG.md) for detailed update history.**
 
@@ -748,8 +849,11 @@ Potential features for expansion:
 
 ## Version History
 
-**Current Version**: 1.0 - Full Prototype
-- Complete 6-question type system
+**Current Version**: 1.1 - Full Prototype with Reflection System
+- Complete 7-question type system (including reflections)
+- Reflection system with admin feedback
+- MyReflections page for users
+- AdminReflections component for instructors
 - Gamification (lives, hints, points, badges)
 - Admin panel with full CRUD
 - Clay-style UI throughout
@@ -760,4 +864,4 @@ Potential features for expansion:
 - Results screen with bonus points
 - Leaderboard system
 
-**Last Updated**: January 16, 2025
+**Last Updated**: November 1, 2025

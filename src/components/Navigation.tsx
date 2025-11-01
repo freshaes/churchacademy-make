@@ -17,7 +17,8 @@ import {
   Shield,
   Camera,
   BookOpen,
-  LogOut
+  LogOut,
+  MessageSquare
 } from 'lucide-react';
 import { useState } from 'react';
 
@@ -36,6 +37,7 @@ export function Navigation({ currentView, onNavigate, userProfile, userData, onU
   const navItems = [
     { id: 'dashboard', label: 'Dashboard', icon: Home },
     { id: 'browse', label: 'Browse Courses', icon: BookOpen },
+    { id: 'myReflections', label: 'My Reflections', icon: MessageSquare },
     { id: 'leaderboard', label: 'Leaderboard', icon: Trophy },
     { id: 'profile', label: 'Profile', icon: User }
   ];

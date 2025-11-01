@@ -9,6 +9,7 @@ import { Progress } from './ui/progress';
 import { Checkbox } from './ui/checkbox';
 import { RadioGroup, RadioGroupItem } from './ui/radio-group';
 import { Label } from './ui/label';
+import { Textarea } from './ui/textarea';
 import { ImageWithFallback } from './figma/ImageWithFallback';
 import { ResultsScreen } from './ResultsScreen';
 import { 
@@ -28,7 +29,9 @@ import {
   Circle,
   Square,
   Triangle,
-  Hexagon
+  Hexagon,
+  BookOpen,
+  Save
 } from 'lucide-react';
 
 // Detect touch device for drag-and-drop backend
@@ -42,7 +45,7 @@ const DragBackend = isTouchDevice() ? TouchBackend : HTML5Backend;
 const scenarioData = {
   1: { // Leadership Fundamentals
     title: 'Leadership Fundamentals',
-    totalQuestions: 8,
+    totalQuestions: 9,
     currentQuestion: 1,
     questions: [
       {
@@ -208,6 +211,15 @@ Take your time to absorb this content. When you're ready, click Continue to begi
           incorrect: 'Actually, effective leaders avoid taking sides immediately. They gather information and seek understanding first.'
         },
         points: 5
+      },
+      {
+        type: 'reflection',
+        id: 'leadership-reflection-1',
+        question: 'Reflect on a time when you had to make a difficult leadership decision. What did you learn from that experience?',
+        guidance: 'Think about a specific situation where you had to lead through uncertainty or make a hard choice. What factors did you consider? How did it turn out?',
+        minCharacters: 100,
+        maxCharacters: 1000,
+        points: 10
       }
     ]
   },
@@ -1734,6 +1746,79 @@ function ContentSlide({ title, content, imageUrl, videoUrl, videoDescription }) 
   );
 }
 
+function ReflectionQuestion({ question, guidance, minCharacters, maxCharacters, reflectionText, onReflectionChange }) {
+  const [isSaved, setIsSaved] = React.useState(false);
+  const characterCount = reflectionText?.length || 0;
+  const wordsCount = reflectionText ? reflectionText.trim().split(/\s+/).filter(w => w).length : 0;
+  const meetsMinimum = characterCount >= (minCharacters || 100);
+  
+  // Auto-save indicator
+  React.useEffect(() => {
+    if (reflectionText && reflectionText.length > 0) {
+      setIsSaved(false);
+      const timer = setTimeout(() => {
+        setIsSaved(true);
+      }, 1000);
+      return () => clearTimeout(timer);
+    }
+  }, [reflectionText]);
+
+  return (
+    <div className="space-y-4">
+      {/* Gentle prompt */}
+      <div className="bg-gradient-to-br from-[#E8F0E5] to-[#D4E5CF] rounded-3xl border-2 border-[#7A9B70] p-6">
+        <div className="flex items-start gap-3">
+          <BookOpen className="w-6 h-6 text-[#3A4A46] flex-shrink-0 mt-1" />
+          <div>
+            <p className="text-[#3A4A46] mb-2">Take a moment to reflect...</p>
+            {guidance && (
+              <p className="text-sm text-[#6B7B77]">{guidance}</p>
+            )}
+          </div>
+        </div>
+      </div>
+
+      {/* Textarea */}
+      <div className="space-y-2">
+        <Textarea
+          value={reflectionText || ''}
+          onChange={(e) => onReflectionChange(e.target.value)}
+          placeholder="Share your thoughts here... Be honest and thoughtful. There are no wrong answers."
+          className="min-h-[200px] rounded-2xl border-4 border-[#3A4A46] bg-white p-4 text-[#3A4A46] placeholder:text-[#6B7B77]/50 focus:border-[#7A9B70] focus:ring-0 resize-none"
+          style={{ fontSize: '16px', lineHeight: '1.6' }}
+        />
+        
+        {/* Character counter and save indicator */}
+        <div className="flex items-center justify-between text-sm">
+          <div className="flex items-center gap-3">
+            <span className={`${meetsMinimum ? 'text-[#7A9B70]' : 'text-[#6B7B77]'}`}>
+              {wordsCount} words
+            </span>
+            {minCharacters && (
+              <span className="text-[#6B7B77]">
+                {meetsMinimum ? '✓' : `(minimum ${Math.ceil(minCharacters / 5)} words)`}
+              </span>
+            )}
+          </div>
+          {isSaved && reflectionText && (
+            <div className="flex items-center gap-1 text-[#7A9B70]">
+              <Save className="w-3 h-3" />
+              <span>Saved</span>
+            </div>
+          )}
+        </div>
+      </div>
+
+      {/* Encouraging message */}
+      <div className="bg-[#FFF8F2] rounded-2xl border-2 border-[#C5D1BF] p-4">
+        <p className="text-sm text-[#6B7B77] text-center">
+          Your reflection will be saved and you'll receive personalized feedback from your mentor.
+        </p>
+      </div>
+    </div>
+  );
+}
+
 export function LearningScenario({ scenario, userData, onComplete, onBack, onLivesUpdate, onHintsUpdate }) {
   const [currentQuestionIndex, setCurrentQuestionIndex] = useState(0);
   const [selectedOption, setSelectedOption] = useState(null);
@@ -1742,6 +1827,7 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
   const [matches, setMatches] = useState({});
   const [selectedBlankAnswers, setSelectedBlankAnswers] = useState({});
   const [pendingMatch, setPendingMatch] = useState(null);
+  const [reflectionText, setReflectionText] = useState('');
   const [showFeedback, setShowFeedback] = useState(false);
   const [showExplanation, setShowExplanation] = useState(false);
   const [livesLost, setLivesLost] = useState(0);
@@ -1784,6 +1870,7 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
     setMatches({});
     setSelectedBlankAnswers({});
     setPendingMatch(null);
+    setReflectionText('');
     setShowFeedback(false);
     setShowExplanation(false);
     setHintRevealed(false);
@@ -1957,6 +2044,17 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
     let isCorrect = false;
     
     switch (currentQuestion.type) {
+      case 'reflection':
+        // Reflections are always "correct" - just check if they wrote something
+        isCorrect = reflectionText && reflectionText.trim().length >= (currentQuestion.minCharacters || 100);
+        // TODO: Save reflection to database here
+        console.log('Saving reflection:', {
+          questionId: currentQuestion.id,
+          text: reflectionText,
+          pathId: scenario.pathId,
+          chapterId: scenario.chapter
+        });
+        break;
       case 'multiple-choice':
         isCorrect = selectedOption?.correct || false;
         break;
@@ -2027,6 +2125,8 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
     switch (currentQuestion.type) {
       case 'content':
         return true; // Content slides don't require an answer
+      case 'reflection':
+        return reflectionText && reflectionText.trim().length >= (currentQuestion.minCharacters || 100);
       case 'multiple-choice':
         return selectedOption !== null;
       case 'true-false':
@@ -2061,6 +2161,18 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
             imageUrl={currentQuestion.imageUrl}
             videoUrl={currentQuestion.videoUrl}
             videoDescription={currentQuestion.videoDescription}
+          />
+        );
+      
+      case 'reflection':
+        return (
+          <ReflectionQuestion
+            question={currentQuestion.question}
+            guidance={currentQuestion.guidance}
+            minCharacters={currentQuestion.minCharacters}
+            maxCharacters={currentQuestion.maxCharacters}
+            reflectionText={reflectionText}
+            onReflectionChange={setReflectionText}
           />
         );
       
@@ -2157,6 +2269,8 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
     switch (currentQuestion.type) {
       case 'content':
         return null; // No feedback for content slides
+      case 'reflection':
+        return 'Your reflection has been saved. Your thoughts matter! You\'ll receive personalized feedback from your mentor soon.';
       case 'multiple-choice':
         return selectedOption?.feedback;
       case 'true-false':
@@ -2215,11 +2329,24 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
         {/* Progress */}
         <Card className="mb-6">
           <CardContent className="pt-6">
-            <div className="flex items-center justify-between mb-2">
-              <h2 className="text-[#3A4A46]">{data.title} {retakeMode && '- Retry Mode'}</h2>
-              <span className="text-sm text-[#6B7B77] font-medium">
-                Question {currentQuestionIndex + 1} of {questionsLength}
-              </span>
+            <div className="flex items-start justify-between mb-3 gap-4">
+              {/* Two-line header: Path name above, Chapter name below (bold) */}
+              <div className="flex-1 min-w-0">
+                <p className="text-sm text-[#6B7B77] mb-1 font-normal">
+                  {scenario.pathTitle || data.title}
+                </p>
+                <h2 className="text-[#3A4A46] font-bold leading-tight text-[14px]">
+                  {scenario.title || `Chapter ${scenario.chapter || 1}`}
+                  {retakeMode && <span className="text-accent ml-2">- Retry Mode</span>}
+                </h2>
+              </div>
+              
+              {/* Larger question counter - aligned with chapter title */}
+              <div className="text-right flex-shrink-0 pt-[1.375rem]">
+                <span className="text-lg text-[#3A4A46] font-bold whitespace-nowrap text-[16px]">
+                  Question {currentQuestionIndex + 1} of {questionsLength}
+                </span>
+              </div>
             </div>
             <Progress value={progress} className="h-2" />
           </CardContent>
@@ -2237,7 +2364,7 @@ export function LearningScenario({ scenario, userData, onComplete, onBack, onLiv
           </CardHeader>
           <CardContent>
             <div className="flex items-start justify-between mb-6">
-              <p className="text-lg leading-relaxed flex-1 text-[#3A4A46]">
+              <p className="leading-relaxed flex-1 text-[#3A4A46] text-[20px] font-bold">
                 {currentQuestion.question}
               </p>
               

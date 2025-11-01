@@ -10,6 +10,7 @@ import { Navigation } from './components/Navigation';
 import { AdminDashboard } from './components/AdminDashboard';
 import { CourseDetail } from './components/CourseDetail';
 import { LogoutScreen } from './components/LogoutScreen';
+import { MyReflections } from './components/MyReflections';
 
 export default function App() {
   const [currentView, setCurrentView] = useState('onboarding');
@@ -65,56 +66,36 @@ export default function App() {
 
   // Helper function to get the first scenario for a learning path
   const getScenarioForPath = (pathId) => {
-    const pathScenarios = {
-      1: { // Leadership Fundamentals
-        id: 1,
-        title: 'Team Conflict Resolution',
-        description: 'Navigate a disagreement between two team members',
-        pathTitle: 'Leadership Fundamentals',
-        lesson: 1
-      },
-      2: { // Conflict Resolution Mastery
-        id: 2,
-        title: 'Handling Criticism',
-        description: 'Respond to feedback about your leadership style',
-        pathTitle: 'Conflict Resolution Mastery',
-        lesson: 1
-      },
-      3: { // Building Strong Communities
-        id: 3,
-        title: 'Welcoming Newcomers',
-        description: 'Help a new member feel included in your ministry',
-        pathTitle: 'Building Strong Communities',
-        lesson: 1
-      },
-      4: { // Communication Excellence
-        id: 4,
-        title: 'Difficult Conversations',
-        description: 'Address a sensitive topic with your team',
-        pathTitle: 'Communication Excellence',
-        lesson: 1
-      },
-      5: { // Youth Ministry Leadership
-        id: 5,
-        title: 'Youth Engagement',
-        description: 'Re-engage a disconnected youth group member',
-        pathTitle: 'Youth Ministry Leadership',
-        lesson: 1
-      },
-      6: { // Worship Leadership Excellence
-        id: 6,
-        title: 'Team Coordination',
-        description: 'Coordinate with musicians who have scheduling conflicts',
-        pathTitle: 'Worship Leadership Excellence',
-        lesson: 1
-      }
+    // Map path IDs to titles for proper display in LearningScenario
+    const pathTitles = {
+      1: 'Leadership Fundamentals',
+      2: 'Conflict Resolution Mastery',
+      3: 'Building Strong Communities',
+      4: 'Communication Excellence',
+      5: 'Youth Ministry Leadership',
+      6: 'Worship Leadership Excellence'
     };
     
-    return pathScenarios[pathId] || pathScenarios[1]; // Default to Leadership Fundamentals
+    // Return a scenario object with the pathId as the ID
+    // LearningScenario component uses this ID to look up question data
+    return {
+      id: pathId, // This must match scenarioData keys in LearningScenario
+      pathId: pathId,
+      pathTitle: pathTitles[pathId] || 'Learning Path',
+      title: 'Getting Started', // Default chapter name for first chapter
+      lesson: 1,
+      chapter: 1
+    };
   };
 
   const handleStartScenario = (scenario) => {
-    setCurrentScenario(scenario);
+    // Ensure scenario has proper structure for LearningScenario component
+    const scenarioWithId = {
+      ...scenario,
+      // If scenario doesn't have an ID, try to extract from pathId or default to 1
+      id: scenario.id || scenario.pathId || 1
+    };
+    setCurrentScenario(scenarioWithId);
     setCurrentView('scenario');
   };
 
@@ -165,15 +146,18 @@ export default function App() {
   };
 
   const handleStartLessonFromCourse = (chapter) => {
-    // In a real app, this would load the actual lesson/scenario
-    console.log('Starting lesson:', chapter);
-    // For now, just show a placeholder scenario
+    // Map course/chapter to a valid scenario ID (1-6)
+    // For now, use a simple mapping based on course or default to 1
+    const scenarioId = selectedCourse?.id || 1;
+    
     setCurrentScenario({
-      id: chapter.id,
+      id: scenarioId, // Use course ID to map to scenario data
+      pathId: scenarioId,
       title: chapter.title,
       description: chapter.description,
       pathTitle: selectedCourse?.title || 'Course',
-      lesson: chapter.id
+      lesson: chapter.id,
+      chapter: chapter.id
     });
     setCurrentView('scenario');
   };
@@ -268,6 +252,13 @@ export default function App() {
             userProfile={userProfile}
             userData={userData}
             onUpdateProfile={setUserProfile}
+          />
+        )}
+
+        {currentView === 'myReflections' && (
+          <MyReflections 
+            onBack={() => setCurrentView('dashboard')}
+            userProfile={userProfile}
           />
         )}
 

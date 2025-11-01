@@ -16,11 +16,13 @@ import {
   Trash2,
   Eye,
   Save,
-  X
+  X,
+  MessageSquare
 } from 'lucide-react';
 import { PathEditor } from './PathEditor';
 import { BadgeManager } from './BadgeManager';
 import { UserManager } from './UserManager';
+import { AdminReflections } from './AdminReflections';
 
 // Mock analytics data
 const analyticsData = {
@@ -68,7 +70,7 @@ export function AdminDashboard({ onBack }) {
       {/* Main Content */}
       <div className="max-w-7xl mx-auto px-6 py-6">
         <Tabs value={activeTab} onValueChange={setActiveTab} className="space-y-6">
-          <TabsList className="grid w-full grid-cols-4 lg:w-auto lg:inline-grid">
+          <TabsList className="grid w-full grid-cols-5 lg:w-auto lg:inline-grid">
             <TabsTrigger value="overview" className="flex items-center gap-2">
               <BarChart3 className="w-4 h-4" />
               <span className="hidden sm:inline">Overview</span>
@@ -76,6 +78,10 @@ export function AdminDashboard({ onBack }) {
             <TabsTrigger value="paths" className="flex items-center gap-2">
               <BookOpen className="w-4 h-4" />
               <span className="hidden sm:inline">Learning Paths</span>
+            </TabsTrigger>
+            <TabsTrigger value="reflections" className="flex items-center gap-2">
+              <MessageSquare className="w-4 h-4" />
+              <span className="hidden sm:inline">Reflections</span>
             </TabsTrigger>
             <TabsTrigger value="badges" className="flex items-center gap-2">
               <Award className="w-4 h-4" />
@@ -203,6 +209,11 @@ export function AdminDashboard({ onBack }) {
           {/* Learning Paths Tab */}
           <TabsContent value="paths">
             <PathEditor />
+          </TabsContent>
+
+          {/* Reflections Tab */}
+          <TabsContent value="reflections">
+            <AdminReflections />
           </TabsContent>
 
           {/* Badges Tab */}

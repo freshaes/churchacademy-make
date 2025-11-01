@@ -270,6 +270,9 @@ export function Dashboard({ userProfile, userData, onStartScenario, onViewCourse
                 const isExpanded = expandedPaths.includes(path.id);
                 const pathProgress = (path.completedChapters / path.totalChapters) * 100;
                 
+                // Find the next chapter to continue (first non-completed chapter)
+                const nextChapter = path.chapters.find(ch => ch.status !== 'completed') || path.chapters[0];
+                
                 return (
                   <Collapsible
                     key={path.id}
@@ -277,153 +280,208 @@ export function Dashboard({ userProfile, userData, onStartScenario, onViewCourse
                     onOpenChange={() => togglePath(path.id)}
                   >
                     <div className="border-2 border-[#3A4A46] rounded-2xl shadow-[0_3px_0_0_rgba(58,74,70,0.1)] overflow-hidden">
-                      {/* Path Header */}
-                      <CollapsibleTrigger asChild>
-                        <div className="bg-gradient-to-r from-[#E8F1E5] to-[#FFF8F2] p-4 cursor-pointer hover:from-[#DFE9DC] hover:to-[#F5EFE9] transition-colors">
-                          <div className="flex items-start justify-between mb-2">
-                            <div className="flex-1">
-                              <div className="flex items-center gap-2 mb-1">
-                                <h3 className="font-bold text-[#3A4A46]">{path.title}</h3>
-                                <Badge variant="secondary" className="text-xs">{path.difficulty}</Badge>
-                              </div>
-                              <p className="text-sm text-[#6B7B77]">{path.description}</p>
-                            </div>
-                            {isExpanded ? (
-                              <ChevronUp className="w-5 h-5 text-[#3A4A46] ml-2 flex-shrink-0" />
-                            ) : (
-                              <ChevronDown className="w-5 h-5 text-[#3A4A46] ml-2 flex-shrink-0" />
-                            )}
+                      {/* Path Header - Quick Summary */}
+                      <div className="bg-gradient-to-r from-[#E8F1E5] to-[#FFF8F2] p-4">
+                        <div className="flex items-start justify-between gap-4 mb-3">
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-bold text-[#3A4A46] mb-1">{path.title}</h3>
+                            <p className="text-sm text-[#6B7B77] line-clamp-1">{path.description}</p>
                           </div>
                           
-                          <div className="flex items-center gap-4 mt-3">
-                            <div className="flex-1">
-                              <div className="flex items-center justify-between mb-1">
-                                <span className="text-xs text-[#3A4A46]/70">
-                                  {path.completedChapters} of {path.totalChapters} chapters
-                                </span>
-                                <span className="text-xs font-bold text-[#3A4A46]">
-                                  {Math.round(pathProgress)}%
-                                </span>
-                              </div>
-                              <Progress value={pathProgress} className="h-2" />
+                          {/* Details Toggle Button */}
+                          <CollapsibleTrigger asChild>
+                            <Button
+                              variant="ghost"
+                              size="sm"
+                              className="flex-shrink-0 h-8 px-2 hover:bg-white/50"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              <span className="text-xs text-[#6B7B77] mr-1">Details</span>
+                              {isExpanded ? (
+                                <ChevronUp className="w-4 h-4 text-[#3A4A46]" />
+                              ) : (
+                                <ChevronDown className="w-4 h-4 text-[#3A4A46]" />
+                              )}
+                            </Button>
+                          </CollapsibleTrigger>
+                        </div>
+                        
+                        {/* Progress Bar */}
+                        <div className="mb-3">
+                          <div className="flex items-center justify-between mb-1">
+                            <span className="text-xs text-[#3A4A46]/70">
+                              {path.completedChapters} of {path.totalChapters} chapters
+                            </span>
+                            <span className="text-xs font-bold text-[#3A4A46]">
+                              {Math.round(pathProgress)}%
+                            </span>
+                          </div>
+                          <Progress value={pathProgress} className="h-2" />
+                        </div>
+                        
+                        {/* Continue Button */}
+                        <Button
+                          onClick={() => onStartScenario({
+                            id: path.id,
+                            pathId: path.id,
+                            chapterId: nextChapter.id,
+                            title: nextChapter.title,
+                            pathTitle: path.title,
+                            description: nextChapter.description,
+                            xpReward: nextChapter.xpReward
+                          })}
+                          className="w-full bg-[#7A9B70] hover:bg-[#6B8A61] text-white border-2 border-[#3A4A46] rounded-xl shadow-[0_3px_0_0_rgba(58,74,70,0.3)] active:shadow-none active:translate-y-[3px] transition-all"
+                        >
+                          {path.completedChapters === path.totalChapters ? (
+                            <>
+                              <CheckCircle2 className="w-4 h-4 mr-2" />
+                              Review Path
+                            </>
+                          ) : path.completedChapters > 0 ? (
+                            <>
+                              <PlayCircle className="w-4 h-4 mr-2" />
+                              Continue: {nextChapter.title}
+                            </>
+                          ) : (
+                            <>
+                              <PlayCircle className="w-4 h-4 mr-2" />
+                              Start Learning
+                            </>
+                          )}
+                          <ChevronRight className="w-4 h-4 ml-auto" />
+                        </Button>
+                      </div>
+
+                      {/* Detailed Chapters List */}
+                      <CollapsibleContent>
+                        <div className="bg-white border-t-2 border-[#3A4A46]/10">
+                          {/* Path Metadata (shown when expanded) */}
+                          <div className="p-4 border-b-2 border-[#3A4A46]/10 bg-[#FFF8F2]/50">
+                            <div className="flex items-center gap-4 text-sm">
+                              <Badge variant="secondary" className="text-xs">
+                                {path.difficulty}
+                              </Badge>
+                              <span className="text-[#6B7B77]">
+                                {path.totalChapters} chapters
+                              </span>
                             </div>
                           </div>
-                        </div>
-                      </CollapsibleTrigger>
-
-                      {/* Chapters List */}
-                      <CollapsibleContent>
-                        <div className="bg-white divide-y-2 divide-[#3A4A46]/10">
-                          {path.chapters.map((chapter, index) => (
-                            <div
-                              key={chapter.id}
-                              className={`p-4 transition-colors ${
-                                chapter.status === 'locked' 
-                                  ? 'opacity-60 bg-gray-50' 
-                                  : 'hover:bg-[#FFF8F2]'
-                              }`}
-                            >
-                              <div className="flex items-start gap-4">
-                                {/* Chapter Number */}
-                                <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold border-2 flex-shrink-0 ${
-                                  chapter.status === 'completed'
-                                    ? 'bg-[#7A9B70] border-[#3A4A46] text-white'
-                                    : chapter.status === 'in-progress'
-                                    ? 'bg-[#E66E5A] border-[#3A4A46] text-white'
-                                    : chapter.status === 'locked'
-                                    ? 'bg-white border-[#3A4A46]/30 text-[#3A4A46]/30'
-                                    : 'bg-white border-[#3A4A46] text-[#3A4A46]'
-                                }`}>
-                                  {chapter.status === 'completed' ? (
-                                    <CheckCircle2 className="w-5 h-5" />
-                                  ) : chapter.status === 'locked' ? (
-                                    <Lock className="w-5 h-5" />
-                                  ) : (
-                                    index + 1
-                                  )}
-                                </div>
-
-                                {/* Chapter Content */}
-                                <div className="flex-1 min-w-0">
-                                  <div className="flex items-start justify-between gap-3 mb-2">
-                                    <div>
-                                      <h4 className="font-bold text-[#3A4A46] mb-1">
-                                        {chapter.title}
-                                      </h4>
-                                      <p className="text-sm text-[#6B7B77]">
-                                        {chapter.description}
-                                      </p>
-                                    </div>
+                          
+                          {/* Chapter List */}
+                          <div className="divide-y-2 divide-[#3A4A46]/10">
+                            {path.chapters.map((chapter, index) => (
+                              <div
+                                key={chapter.id}
+                                className={`p-4 transition-colors ${
+                                  chapter.status === 'locked' 
+                                    ? 'opacity-60 bg-gray-50' 
+                                    : 'hover:bg-[#FFF8F2]'
+                                }`}
+                              >
+                                <div className="flex items-start gap-4">
+                                  {/* Chapter Number */}
+                                  <div className={`w-10 h-10 rounded-xl flex items-center justify-center font-bold border-2 flex-shrink-0 ${
+                                    chapter.status === 'completed'
+                                      ? 'bg-[#7A9B70] border-[#3A4A46] text-white'
+                                      : chapter.status === 'in-progress'
+                                      ? 'bg-[#E66E5A] border-[#3A4A46] text-white'
+                                      : chapter.status === 'locked'
+                                      ? 'bg-white border-[#3A4A46]/30 text-[#3A4A46]/30'
+                                      : 'bg-white border-[#3A4A46] text-[#3A4A46]'
+                                  }`}>
+                                    {chapter.status === 'completed' ? (
+                                      <CheckCircle2 className="w-5 h-5" />
+                                    ) : chapter.status === 'locked' ? (
+                                      <Lock className="w-5 h-5" />
+                                    ) : (
+                                      index + 1
+                                    )}
                                   </div>
 
-                                  {/* Chapter Progress */}
-                                  {(chapter.status === 'in-progress' || chapter.status === 'completed') && (
-                                    <div className="mb-3">
-                                      <div className="flex items-center justify-between mb-1">
-                                        <span className="text-xs text-[#6B7B77]">
-                                          {chapter.completedQuestions} of {chapter.totalQuestions} questions
-                                        </span>
-                                        {chapter.status === 'completed' && (
-                                          <div className="flex items-center gap-2">
-                                            <span className="text-xs text-[#7A9B70] font-medium">
-                                              Score: {chapter.score}%
-                                            </span>
-                                            <div className="flex items-center">
-                                              {[1, 2, 3].map((star) => (
-                                                <Star
-                                                  key={star}
-                                                  className={`w-3 h-3 ${
-                                                    star <= chapter.stars
-                                                      ? 'fill-[#F4A460] text-[#F4A460]'
-                                                      : 'text-gray-300'
-                                                  }`}
-                                                />
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
+                                  {/* Chapter Content */}
+                                  <div className="flex-1 min-w-0">
+                                    <div className="flex items-start justify-between gap-3 mb-2">
+                                      <div>
+                                        <h4 className="font-bold text-[#3A4A46] mb-1">
+                                          {chapter.title}
+                                        </h4>
+                                        <p className="text-sm text-[#6B7B77]">
+                                          {chapter.description}
+                                        </p>
                                       </div>
-                                      <Progress 
-                                        value={(chapter.completedQuestions / chapter.totalQuestions) * 100} 
-                                        className="h-2"
-                                      />
                                     </div>
-                                  )}
 
-                                  {/* Chapter Actions */}
-                                  <div className="flex items-center justify-between">
-                                    <div className="flex items-center gap-1 text-sm text-[#6B7B77]">
-                                      <Star className="w-4 h-4 text-[#3A4A46]" />
-                                      <span className="font-medium">{chapter.xpReward} XP</span>
+                                    {/* Chapter Progress */}
+                                    {(chapter.status === 'in-progress' || chapter.status === 'completed') && (
+                                      <div className="mb-3">
+                                        <div className="flex items-center justify-between mb-1">
+                                          <span className="text-xs text-[#6B7B77]">
+                                            {chapter.completedQuestions} of {chapter.totalQuestions} questions
+                                          </span>
+                                          {chapter.status === 'completed' && (
+                                            <div className="flex items-center gap-2">
+                                              <span className="text-xs text-[#7A9B70] font-medium">
+                                                Score: {chapter.score}%
+                                              </span>
+                                              <div className="flex items-center">
+                                                {[1, 2, 3].map((star) => (
+                                                  <Star
+                                                    key={star}
+                                                    className={`w-3 h-3 ${
+                                                      star <= chapter.stars
+                                                        ? 'fill-[#F4A460] text-[#F4A460]'
+                                                        : 'text-gray-300'
+                                                    }`}
+                                                  />
+                                                ))}
+                                              </div>
+                                            </div>
+                                          )}
+                                        </div>
+                                        <Progress 
+                                          value={(chapter.completedQuestions / chapter.totalQuestions) * 100} 
+                                          className="h-2"
+                                        />
+                                      </div>
+                                    )}
+
+                                    {/* Chapter Actions */}
+                                    <div className="flex items-center justify-between">
+                                      <div className="flex items-center gap-1 text-sm text-[#6B7B77]">
+                                        <Star className="w-4 h-4 text-[#3A4A46]" />
+                                        <span className="font-medium">{chapter.xpReward} XP</span>
+                                      </div>
+                                      
+                                      <Button
+                                        onClick={() => onStartScenario({
+                                          id: path.id, // Use path ID (1-6) for LearningScenario to find question data
+                                          pathId: path.id,
+                                          chapterId: chapter.id,
+                                          title: chapter.title,
+                                          pathTitle: path.title,
+                                          description: chapter.description,
+                                          xpReward: chapter.xpReward
+                                        })}
+                                        size="sm"
+                                        disabled={chapter.status === 'locked'}
+                                        variant={chapter.status === 'completed' ? 'outline' : 'default'}
+                                      >
+                                        {chapter.status === 'completed' ? (
+                                          <>Review <ChevronRight className="w-4 h-4 ml-1" /></>
+                                        ) : chapter.status === 'in-progress' ? (
+                                          <>Continue <ChevronRight className="w-4 h-4 ml-1" /></>
+                                        ) : chapter.status === 'locked' ? (
+                                          <>Locked <Lock className="w-4 h-4 ml-1" /></>
+                                        ) : (
+                                          <>Start <ChevronRight className="w-4 h-4 ml-1" /></>
+                                        )}
+                                      </Button>
                                     </div>
-                                    
-                                    <Button
-                                      onClick={() => onStartScenario({
-                                        id: chapter.id,
-                                        title: chapter.title,
-                                        pathTitle: path.title,
-                                        description: chapter.description,
-                                        xpReward: chapter.xpReward
-                                      })}
-                                      size="sm"
-                                      disabled={chapter.status === 'locked'}
-                                      variant={chapter.status === 'completed' ? 'outline' : 'default'}
-                                    >
-                                      {chapter.status === 'completed' ? (
-                                        <>Review <ChevronRight className="w-4 h-4 ml-1" /></>
-                                      ) : chapter.status === 'in-progress' ? (
-                                        <>Continue <ChevronRight className="w-4 h-4 ml-1" /></>
-                                      ) : chapter.status === 'locked' ? (
-                                        <>Locked <Lock className="w-4 h-4 ml-1" /></>
-                                      ) : (
-                                        <>Start <ChevronRight className="w-4 h-4 ml-1" /></>
-                                      )}
-                                    </Button>
                                   </div>
                                 </div>
                               </div>
-                            </div>
-                          ))}
+                            ))}
+                          </div>
                         </div>
                       </CollapsibleContent>
                     </div>
